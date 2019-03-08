@@ -169,6 +169,7 @@ export class SignUp extends React.Component {
     return re.test(email);
   }
  validateAll=()=> {
+   console.log('validate all called')
 const {user} = this.state
 const {errors} =this.state
   if(!user.first_name) {
@@ -176,7 +177,10 @@ const {errors} =this.state
   }
   if (!this.validateEmail(this.state.user.email)){
        errors.email='email is not proper'
+       console.log(errors.email)
 
+  } else if(this.validateEmail(this.state.user.email)) {
+     errors.email=''
   }
  }
 
@@ -186,7 +190,7 @@ const {errors} =this.state
     event.preventDefault();
     console.log('handle submit')
     this.setState({ submitted: true });
-    this.validateAll
+    this.validateAll()
  
     //console.log(this.state.submitted)
     
@@ -282,38 +286,29 @@ const {errors} =this.state
 
     const { registering } = this.props;
     const { user, submitted } = this.state;
+    const {errors} =this.state
     //const { emailError } = this.state;
+    let errorEmail=''
+
+   if(submitted && errors.email!='') {
+      errorEmail = <Message negative><p>Email is not proper</p></Message>
+   } else if(submitted && !user.email) {
+     errorEmail = <Message negative><p>Email is required</p></Message>
+   }
+
+
+
     return (
       <div>
       <Helmet>
         <title>Register</title>
         <meta name="description" content="Description of Register" />
       </Helmet>
-       <Switch>
-      {/* <Route path="/dashboard" component={MainDashboard} />   */}
-              {/* <Route exact path="/dashboard" render={(props) => (
-          haslocalStorageToken() ? (
-            <MainDashboard {...props} />
-          ) : (
-            <Redirect to="/login"/>
-          )
-        )}/> */}
-      </Switch>
-
-
 
       <Form>
-        {/* {this.state.user.formError
-          ?
-          <Message
-            error
-            header="Please fill in the details properly"
-            content="Your email address may not be valid or password may be less tha 8 charaters long"
-          />
-          :
-          null
-
-        } */}
+      {/* {submitted && errors.email!='' &&
+            <Message negative><p>Email is not proper</p></Message>
+          } */}
 
         <Form.Field>
           <label>First Name</label>
@@ -340,28 +335,7 @@ const {errors} =this.state
             <Message negative><p>Last name is required</p></Message>
           }
         </Form.Field>
-        {/* <Form.Input
-              
-                label='Full Name'
-                placeholder='Full Name'
-                name="name"
-                value={user.name}
-                onChange={this.handleChange}
-                
-              /> */}
 
-
-        {/* <Form.Input
-
-          label="Username"
-          placeholder='Username'
-          name="username"
-          value={user.username}
-          onChange={this.handleChange}
-        />
-        {submitted && !user.username &&
-          <Message negative><p>Username is required</p></Message>
-        } */}
 
         <Form.Input
 
@@ -377,12 +351,11 @@ const {errors} =this.state
           error={user.emailError}
         />
 
-        {submitted && !user.email &&
+        {/* {submitted && !user.email && 
           <Message negative><p>Email is required</p></Message>
-        }
-          {submitted && user.emailError &&
-          <Message negative><p>Enter email properly</p></Message>
-        }
+        } */}
+         {errorEmail}
+
         <Form.Input
           label="Password"
 
