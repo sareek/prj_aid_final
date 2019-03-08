@@ -2,9 +2,9 @@
 import { createSelector } from 'reselect';
 
 /**
- * Direct selector to the signUp state domain
+ * Direct selector to the mainDashboard state domain
  */
-const selectDomain = (state) => state.get('signUp');
+const selectDomain = (state) => state.get('mainDashboard');
 
 /**
  * Other specific selectors
@@ -14,12 +14,9 @@ const makeSelectResponse = () => createSelector(selectDomain, (state) => state.g
 const makeSelectError = () => createSelector(selectDomain, (state) => state.get('error'));
 const makeSelectRequesting = () => createSelector(selectDomain, (state) => state.get('requesting'));
 
-const makeSelectRegisterSuccess = () => createSelector(selectDomain, (state) => state.get('grantedBit'));
-
 export {
   makeSelectSuccess,
   makeSelectResponse,
   makeSelectRequesting,
   makeSelectError,
-  makeSelectRegisterSuccess
 };

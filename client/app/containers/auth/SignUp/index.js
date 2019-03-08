@@ -16,13 +16,23 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 // import makeSelectSignUp from './selectors';
 import {
-  makeSelectRequesting, makeSelectError, makeSelectResponse, makeSelectSuccess
+  makeSelectRequesting, makeSelectError, makeSelectResponse, makeSelectSuccess, makeSelectRegisterSuccess
 } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
+// import { withRouter } from 'react-router-dom';
+//import MainDashboard from '../../MainDashboard/Loadable';
 
 import { registerRequest } from './actions';
+
+import UserRoute from 'components/Routes/UserRoute';
+import { Switch, Route } from 'react-router-dom';
+import { push } from 'react-router-redux';
+
+import createHistory from "history/createBrowserHistory";
+
+const history = createHistory();
 
 import {
   Grid,
@@ -35,6 +45,7 @@ import {
   Message,
   Container,
 } from 'semantic-ui-react';
+import { MainDashboard } from '../../MainDashboard';
 
 /* eslint-disable react/prefer-stateless-function */
 export class SignUp extends React.Component {
@@ -42,14 +53,16 @@ export class SignUp extends React.Component {
     super(props);
 
     this.state = {
+      grantedBit:false,
       user: {
-        name: '',
+        first_name: '',
+        last_name:'',
 
-        username: '',
+      //  username: '',
         email: '',
         password: '',
         confirmpassword: '',
-        phone: '',
+        referral_code: '',
         nameError: false,
         emailError: false,
         passwordError: false,
@@ -59,15 +72,57 @@ export class SignUp extends React.Component {
         createUserError: false
 
       },
-      submitted: false
+      errors: {
+         first_name:'',
+         last_name :'',
+         email     :'',
+         password  :'',
+
+      },
+      submitted: false,
+      
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.validateEmail = this.validateEmail.bind(this);
+    this.validateAll = this.validateAll.bind(this);
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+   
+    if(nextProps.grantedBit) {
+      console.log('will receive props', nextProps.grantedBit)
+      this.setState(state => ({
+        grantedBit: nextProps.adds
+      }))
+      localStorage.setItem('token', nextProps.grantedBit);
+      // if (localStorage.getItem("token") === 'true') {
+      //   console.log('yippee')
+      // }
+
+        //check for token
+      if(localStorage.token){
+      //   //set auth token header auth
+      //   setAuthToken(localStorage.token);
+      //   //Decode token and get user info
+      //   const decoded=jwt_decode(localStorage.token);
+      //   //set user and isAuthenticated
+      // store.dispatch(setCurentUser(decoded));
+         console.log('yippee')
+         // push('/dashboard');
+          this.props.history.push('/dashboard')
+         
+
+      
+
+}
+    }
   }
 
   handleChange(event) {
+   // console.log('change')
     const { name, value } = event.target;
     const { user } = this.state;
     this.setState({
@@ -75,24 +130,9 @@ export class SignUp extends React.Component {
         ...user,
         [name]: value
       }
+    },()=>{
+      console.log('handle change',user.email)
     });
-  }
-
-  validateEmail = (email) => {
-
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    console.log('validate email function', re.test(email))
-    return re.test(email);
-  }
-
-
-
-  handleSubmit(event) {
-    event.preventDefault();
-    console.log('handle submit')
-    this.setState({ submitted: true });
-
-    // let error = false;
 
     // if (this.validateEmail(this.state.user.email)) {
     //   console.log('check success')
@@ -108,15 +148,79 @@ export class SignUp extends React.Component {
 
     // }
     // else {
+
     //   this.setState({
     //     user: {
     //       ...user,
     //       emailError: true
     //     }
+    //   }, () => {
+    //     console.log('inside else block for email error',this.state.user.emailError)
     //   });
 
-    //   error = true;
+    //  // error = true;
     // }
+  }
+
+  validateEmail = (email) => {
+
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+   // console.log('validate email function', re.test(email))
+    return re.test(email);
+  }
+ validateAll=()=> {
+const {user} = this.state
+const {errors} =this.state
+  if(!user.first_name) {
+    errors.first_name = "name is needed"
+  }
+  if (!this.validateEmail(this.state.user.email)){
+       errors.email='email is not proper'
+
+  }
+ }
+
+
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log('handle submit')
+    this.setState({ submitted: true });
+    this.validateAll
+ 
+    //console.log(this.state.submitted)
+    
+
+    // let error = false;
+
+    // if (!(this.validateEmail(this.state.user.email))) {
+      
+
+
+    //   this.setState({
+    //     user: {
+    //       ...user,
+    //       emailError: true
+    //     }
+    //   }, ()=> {
+    //     console.log('check email error',this.state.user.emailError)
+    //   });
+
+
+    // }
+    // else {
+
+    //   this.setState({
+    //     user: {
+    //       ...user,
+    //       emailError: false
+    //     }
+    //   }, () => {
+    //     console.log('inside else block for email error',this.state.user.emailError)
+    //   });
+
+    // //  // error = true;
+    //  }
 
     // if (this.state.user.password.length < 8) {
     //   this.setState({
@@ -152,21 +256,23 @@ export class SignUp extends React.Component {
     // }
 
     //  this.setState({formError: false})
+    
 
     const { user } = this.state;
     
 
-    if (user.name && user.username && user.email && user.password && user.confirmpassword && user.phone) {
+    if (user.first_name && user.last_name && user.email && user.password && user.referral_code) {
 
       const data = {
-        fullName : user.name,
-        userName : user.username,
-        email    : user.email,
-        password : user.password,
-        phone    : user.phone
+      
+        first_name    : user.first_name,
+        last_name     : user.last_name,
+        email         : user.email,
+        password      : user.password,
+        referral_code : user.referral_code
       }
       console.log(data)
-     
+      //debugger
       this.props.registerRequest(data)
     
     
@@ -176,12 +282,26 @@ export class SignUp extends React.Component {
 
     const { registering } = this.props;
     const { user, submitted } = this.state;
+    //const { emailError } = this.state;
     return (
       <div>
       <Helmet>
         <title>Register</title>
         <meta name="description" content="Description of Register" />
       </Helmet>
+       <Switch>
+      {/* <Route path="/dashboard" component={MainDashboard} />   */}
+              {/* <Route exact path="/dashboard" render={(props) => (
+          haslocalStorageToken() ? (
+            <MainDashboard {...props} />
+          ) : (
+            <Redirect to="/login"/>
+          )
+        )}/> */}
+      </Switch>
+
+
+
       <Form>
         {/* {this.state.user.formError
           ?
@@ -196,15 +316,28 @@ export class SignUp extends React.Component {
         } */}
 
         <Form.Field>
-          <label>Full Name</label>
+          <label>First Name</label>
           <input
             placeholder='First Name'
-            name="name"
-            value={user.name}
+            name="first_name"
+            value={user.first_name}
             onChange={this.handleChange}
           />
-          {submitted && !user.name &&
-            <Message negative><p>Name is required</p></Message>
+          {submitted && !user.first_name &&
+            <Message negative><p>First name is required</p></Message>
+          }
+        </Form.Field>
+
+        <Form.Field>
+          <label>Last Name</label>
+          <input
+            placeholder='Last Name'
+            name="last_name"
+            value={user.last_name}
+            onChange={this.handleChange}
+          />
+          {submitted && !user.last_name &&
+            <Message negative><p>Last name is required</p></Message>
           }
         </Form.Field>
         {/* <Form.Input
@@ -218,7 +351,7 @@ export class SignUp extends React.Component {
               /> */}
 
 
-        <Form.Input
+        {/* <Form.Input
 
           label="Username"
           placeholder='Username'
@@ -228,7 +361,7 @@ export class SignUp extends React.Component {
         />
         {submitted && !user.username &&
           <Message negative><p>Username is required</p></Message>
-        }
+        } */}
 
         <Form.Input
 
@@ -237,6 +370,8 @@ export class SignUp extends React.Component {
           type='email'
           placeholder='Email'
           name="email"
+          //validate={this.validateEmail}
+         // errorMessage="Email is invalid"
           value={user.email}
           onChange={this.handleChange}
           error={user.emailError}
@@ -245,7 +380,9 @@ export class SignUp extends React.Component {
         {submitted && !user.email &&
           <Message negative><p>Email is required</p></Message>
         }
-
+          {submitted && user.emailError &&
+          <Message negative><p>Enter email properly</p></Message>
+        }
         <Form.Input
           label="Password"
 
@@ -256,13 +393,15 @@ export class SignUp extends React.Component {
           onChange={this.handleChange}
           error={user.passwordError || user.passwordMatchError}
         />
+
         {submitted && !user.password &&
-          <Message negative><p>Password is required</p></Message>
-        }
+          <Message negative><p>Re-enter Password</p></Message>
+         }
+        
 
         <Form.Input
 
-          label='Password'
+          label='Re-Enter Password'
           type='password'
           placeholder='Re-enter Password'
           name="confirmpassword"
@@ -275,30 +414,29 @@ export class SignUp extends React.Component {
 
         <Form.Input
 
-          label='Phone Number'
+          label='Referral Code'
           type='number'
           maxLength="10"
           placeholder='Phone Number'
-          name="phone"
-          value={user.phone}
+          name="referral_code"
+          value={user.referral_code}
           onChange={this.handleChange}
-        />
+        /> 
 
 
 
-        {submitted && !user.phone &&
+         {submitted && !user.referral_code &&
           <Message negative><p>Phone Number is required</p></Message>
 
         }
 
 
-        <Form.Field>
-          <Checkbox label='I agree to the Terms and Conditions' />
-        </Form.Field>
+
         <Button
+        color='teal'
           onClick={this.handleSubmit}
           type='submit'>Submit</Button>
-        <Form.Button
+        {/* <Form.Button
           fluid
           color='teal'
           type='submit'
@@ -312,7 +450,7 @@ export class SignUp extends React.Component {
           }
         >
           fffff
-              </Form.Button>
+              </Form.Button> */}
       </Form>
     </div>
     );
@@ -331,6 +469,7 @@ const mapStateToProps = createStructuredSelector({
   isSuccess: makeSelectSuccess(),
   errorResponse: makeSelectError(),
   successResponse: makeSelectResponse(),
+  grantedBit:makeSelectRegisterSuccess()
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -21,7 +21,11 @@ import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import LoginPage from '../LoginPage/Loadable';
+
+import LoginCustom from '../auth/Login/Loadable';
+
 import AdminDashboard from '../Dashboard/Admin';
+import MainDashboard from '../MainDashboard/Loadable';
 import ExamplePage from '../ExampleContainer/Loadable';
 
 import SignUp from '../auth/SignUp/Loadable';
@@ -77,19 +81,35 @@ const App = props => {
         <Route exact path="/" component={HomePage} />
         <Route path="/features" component={FeaturePage} />
         <Route path="/example" component={ExamplePage} />
-        <Route path="/admin/dashboard" component={AdminDashboard} />
+        {/* <Route path="/admin/dashboard" component={AdminDashboard} /> */}
         <Route path="/signup" component={SignUp} />  
+        <Route path="/dashboard" component={MainDashboard} />  
         <GuestRoute
           exact
           location={location}
           path="/login"
-          component={LoginPage}
+          component={LoginCustom}
         />
-        <UserRoute
+        {/* <UserRoute
           location={location}
           path="/admin/dashboard"
-          component={AdminDashboard}
-        />
+          component={MainDashboard}
+        /> */}
+
+         {/* <UserRoute
+          location={location}
+          path="/dashboard"
+          component={MainDashboard}
+        /> */}
+
+        {/* <Route exact path="/dashboard" render={(props) => (
+          haslocalStorageToken() ? (
+            <MainDashboard {...props} />
+          ) : (
+            <Redirect to="/login"/>
+          )
+        )}/> */}
+
         <Route path="" component={NotFoundPage} />
       </Switch>
       {/* <Footer /> */}

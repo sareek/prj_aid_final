@@ -14,9 +14,12 @@ const makeSelectResponse = () => createSelector(selectDomain, (state) => state.g
 const makeSelectError = () => createSelector(selectDomain, (state) => state.get('error'));
 const makeSelectRequesting = () => createSelector(selectDomain, (state) => state.get('requesting'));
 
+const makeSelectLoginSuccess = () => createSelector(selectDomain, (state) => state.get('loginInfo'));
+
 export {
   makeSelectSuccess,
   makeSelectResponse,
   makeSelectRequesting,
   makeSelectError,
+  makeSelectLoginSuccess
 };

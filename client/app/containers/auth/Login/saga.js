@@ -32,7 +32,26 @@ function* defaultActionService(action) {
     yield cancel(successWatcher);
 }
 
+function* loginUser(action) {
+    // const token = yield select(makeSelectToken());
+     const {payload} = action;
+     console.log('inside saga for login',payload)
+    //const successWatcher = yield fork(redirectOnSuccess);
+     yield fork(
+         Api.post(
+             `login`,
+             actions.loginRequestSuccess,
+             actions.loginRequestFailure,
+             payload
+                          
+         )
+     );
+      //yield take([LOCATION_CHANGE, types.DEFAULT_ACTION_FAILURE]);
+      // yield cancel(successWatcher);
+ }
+
 // Individual exports for testing
 export default function* defaultSaga() {
     yield takeLatest(types.DEFAULT_ACTION_REQUEST, defaultActionService);
+    yield takeLatest(types.LOGIN_REQUEST, loginUser);
 }

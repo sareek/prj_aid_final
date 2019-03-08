@@ -8,7 +8,12 @@ import { fromJS } from 'immutable';
 // import { DEFAULT_ACTION } from './constants';
 import * as types from './constants';
 
-import { DEFAULT_ACTION, REGISTER_REQUEST } from './constants';
+
+import {
+   DEFAULT_ACTION, 
+   REGISTER_REQUEST, 
+   REGISTER_REQUEST_FAILURE, 
+   REGISTER_REQUEST_SUCCESS } from './constants';
 
 const initialState = fromJS({
   requesting: false,
@@ -33,6 +38,13 @@ function signUpReducer(state = initialState, action = {type: ''}) {
       
       return state.merge({ user: fromJS(action.data) });  
       
+      case REGISTER_REQUEST_SUCCESS:
+      //this.props.history.push('/login')
+      console.log('register request reducer success', action.response)
+      return state.merge({ grantedBit: true }); 
+
+      case REGISTER_REQUEST_FAILURE:
+      console.log('register request reducer failure',action.error)
     default:
       return state;
   }
